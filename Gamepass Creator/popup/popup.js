@@ -27,6 +27,7 @@ const elements = {
   removeAllBtn: document.getElementById('remove-all-btn'),
   customInput: document.getElementById('custom-input'),
   customAmount: document.getElementById('custom-amount'),
+  customCount: document.getElementById('custom-count'),
   createCustomBtn: document.getElementById('create-custom-btn'),
   cancelCustomBtn: document.getElementById('cancel-custom-btn'),
   
@@ -94,6 +95,9 @@ elements.commonValuesBtn.addEventListener('click', () => {
 
 elements.customValueBtn.addEventListener('click', () => {
   elements.customInput.classList.remove('hidden');
+  if (!elements.customCount.value) {
+    elements.customCount.value = '1';
+  }
   elements.customAmount.focus();
 });
 
@@ -102,25 +106,32 @@ elements.removeAllBtn.addEventListener('click', () => {
 });
 
 elements.createCustomBtn.addEventListener('click', () => {
-  const amount = parseInt(elements.customAmount.value);
+  const amount = parseInt(elements.customAmount.value, 10);
+  const count = parseInt(elements.customCount.value, 10);
   
   if (!amount || amount < 1 || amount > 1000000) {
     alert('Please enter a valid amount between 1 and 1,000,000 Robux');
+    elements.customAmount.focus();
     return;
   }
-  
-  createGamepasses([amount]);
+
+  if (!count || count < 1 || count > 100) {
+    alert('Please enter a valid quantity between 1 and 100 gamepasses');
+    elements.customCount.focus();
+    return;
+  }
+
+  const customAmounts = Array(count).fill(amount);
+  createGamepasses(customAmounts);
 });
 
 elements.cancelCustomBtn.addEventListener('click', () => {
-  elements.customInput.classList.add('hidden');
-  elements.customAmount.value = '';
+  resetCustomInput();
 });
 
 elements.doneBtn.addEventListener('click', () => {
   showSection('mainInterface');
-  elements.customInput.classList.add('hidden');
-  elements.customAmount.value = '';
+  resetCustomInput();
 });
 
 elements.errorBackBtn.addEventListener('click', () => {
@@ -130,6 +141,13 @@ elements.errorBackBtn.addEventListener('click', () => {
 elements.refreshBtn.addEventListener('click', () => {
   initialize();
 });
+
+
+function resetCustomInput() {
+  elements.customInput.classList.add('hidden');
+  elements.customAmount.value = '';
+  elements.customCount.value = '1';
+}
 
 // Show confirmation modal
 function showConfirmationModal() {
